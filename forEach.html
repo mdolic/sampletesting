@@ -1,0 +1,67 @@
+<script src="../tinytest.js"></script>
+<script src="adder.js"></script>
+<script>
+  //example 1
+  // forEach([1,2,3,4], function(){
+  //   console.log('hi');
+  // });
+
+  //example 2
+   // forEach([1,2,3,4], function(variable){
+  //   console.log(some variable);
+  // });
+
+  //example 3. the index of the current element being processed in the array
+  //forEach([1,2,3], function (number,index){
+   // console.log(index);
+  //});
+
+   //example 4.
+  //forEach([1,2,3], function (number,index, originalArray){
+    //console.log(originalArray);
+  //});
+  function forEach(array,callback, configurableThisObject){
+    var forEachCallback = callback;
+    //if configurablethisobject exists.
+    if(configurableThisObject){
+      //want to bind configurableThisObject to the callbackfunction
+      forEachCallback = callback.bind(configurableThisObject);
+    }
+    for(var i = 0; i< array.length; i++){
+      //pass in original array as third arguement
+      forEachCallback(array[i],i,array);//random callback function call here to run 3 times based on array length
+    }
+  }
+
+tests({
+//eq = short for equals
+  'it should run the callback function array.length. times': function(){
+    var numberOfTimesCallbackHasRun = 0;
+    forEach([1,2,3], function(){
+      numberOfTimesCallbackHasRun++;
+    });
+    eq(numberOfTimesCallbackHasRun, 3);
+  },
+  'it should pass in the ith element as the first argument to the callback': function(){
+    forEach([1],function(number){
+      eq(number, 1);
+    });
+  },
+  'it should pass in the ith position as the second argument to the callback .':function(){
+    forEach([1],function(number, index){
+      eq(index, 0);
+    });
+  },
+  'it should pass in the original array as the third argument to the callback.':function(){
+   var testArray = [1,2,3];
+   forEach(testArray, function(number, index,originalArray){
+     eq(originalArray, testArray);
+   });
+  },
+  'it should accept a configurable this object':function(){
+    forEach([1], function(){
+      eq(this.description,'I should be accessible inside of the callback');
+    },{description: 'I should be accessible inside of the callback'});
+  }
+});
+</script>
